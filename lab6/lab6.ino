@@ -23,7 +23,6 @@ Adafruit_LIS3DH lis = Adafruit_LIS3DH(LIS3DH_CS, LIS3DH_MOSI, LIS3DH_MISO, LIS3D
    #define Serial SerialUSB
 #endif
 
-
 // ********** Piezo Buzzer stuff **********
 
 #include "pitches.h"
@@ -54,6 +53,12 @@ void noToneMultiplePiezos() {
   noTone(piezoPin2);
   noTone(piezoPin3);
 }
+
+#include "elapsedMillis.h"
+elapsedMillis timeElapsed;
+float initialVelocity = 0.0;
+float currentVelocity = 0.0;
+int timeThreshold = 0.0;
 
 void setup() {
   // **********
@@ -106,10 +111,57 @@ void loop() {
 
   Serial.println();
  
-  delay(200);
+  delay(1);
 
 //  toneMultiplePiezos(abs(float(event.acceleration.x)), 2000);
 //  toneMultiplePiezos(abs(float(event.acceleration.y)), 2000);
 //  toneMultiplePiezos(abs(float(event.acceleration.z)), 2000);
+//  if (abs(event.acceleration.x) < 2) {
+//    toneMultiplePiezos(NOTE_C1, 2000);  
+//  } else if (abs(event.acceleration.x) < 3) {
+//    toneMultiplePiezos(NOTE_D1, 2000);      
+//  } else if (abs(event.acceleration.x) < 4) {
+//    toneMultiplePiezos(NOTE_E1, 2000);      
+//  } else if (abs(event.acceleration.x) < 5) {
+//    toneMultiplePiezos(NOTE_F1, 2000);      
+//  } else if (abs(event.acceleration.x) < 6) {
+//    toneMultiplePiezos(NOTE_G1, 2000);      
+//  } else if (abs(event.acceleration.x) < 7) {
+//    toneMultiplePiezos(NOTE_A1, 2000);      
+//  } else if (abs(event.acceleration.x) < 8) {
+//    toneMultiplePiezos(NOTE_B1, 2000);      
+//  }  
+//
 
+  int numtoruleitall = (abs(event.acceleration.x) + abs(event.acceleration.y) + abs(event.acceleration.z)) / 3;
+  Serial.println(numtoruleitall);
+
+  if (numtoruleitall <= 5) {
+    numtoruleitall = 0;
+  }
+//  toneMultiplePiezos(abs(numtoruleitall) * 100 , 1000);
+
+  if (timeElapsed > timeThreshold + 1) {
+    timeThreshold = timeElapsed;
+    currentVelocity = (initialVelocity  + (numtoruleitall * (timeElapsed/1000)));
+//    initialVelocity = currentVelocity;
+    Serial.println(currentVelocity);
+  }  
+
+  int roll abs(RP_calculate(event.acceleration.x, event.acceleration.y, event.acceleration.z));
+  toneMultiplePiezos(NOTE_D1 * abs(currentVelocity), 1000);  
+  // toneMultiplePiezos(abs(currentVelocity) * roll, 1000);  
+}
+
+
+
+float RP_calculate(float x, float y, float z){
+  double x_Buff = float(x);
+  double y_Buff = float(y);
+  double z_Buff = float(z);
+  float roll = atan2(y_Buff , z_Buff) * 57.3;
+  float pitch = atan2((- x_Buff) , sqrt(y_Buff * y_Buff + z_Buff * z_Buff)) * 57.3;
+  Serial.println("roll");
+  Serial.println(roll);
+  return roll;
 }
