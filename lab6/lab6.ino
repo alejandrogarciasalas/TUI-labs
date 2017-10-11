@@ -148,8 +148,8 @@ void loop() {
     Serial.println(currentVelocity);
   }  
 
-  int roll abs(RP_calculate(event.acceleration.x, event.acceleration.y, event.acceleration.z));
-  toneMultiplePiezos(NOTE_D1 * abs(currentVelocity), 1000);  
+  int roll  = abs(RP_calculate(event.acceleration.x, event.acceleration.y, event.acceleration.z));
+  toneMultiplePiezos(200 * abs(numtoruleitall), 1000);  
   // toneMultiplePiezos(abs(currentVelocity) * roll, 1000);  
 }
 
